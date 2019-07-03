@@ -9,7 +9,7 @@ class TensorboardSummary(object):
         self.directory = directory
 
     def create_summary(self):
-        writer = SummaryWriter(log_dir=os.path.join(self.directory))
+        writer = SummaryWriter(logdir=os.path.join(self.directory))
         return writer
 
     def visualize_image(self, writer, dataset, image, target, output, global_step):
@@ -20,4 +20,5 @@ class TensorboardSummary(object):
         writer.add_image('Predicted label', grid_image, global_step)
         grid_image = make_grid(decode_seg_map_sequence(torch.squeeze(target[:3], 1).detach().cpu().numpy(),
                                                        dataset=dataset), 3, normalize=False, range=(0, 255))
+        writer.add_image('Groundtruth label', grid_image, global_step)
         writer.add_image('Groundtruth label', grid_image, global_step)
