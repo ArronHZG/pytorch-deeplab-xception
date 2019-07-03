@@ -1,5 +1,6 @@
+Cython
+progressbar
 tensorboardX
 tqdm
-Cython
 scipy
 pycocotools
