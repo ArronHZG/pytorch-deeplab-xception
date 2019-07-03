@@ -25,7 +25,7 @@ class MyProgressBar():
 
 
 
-base_dir = "/home/arron/Projects/data/coco"
+base_dir = "E:/data/coco"
 download_url = ["http://images.cocodataset.org/zips/train2017.zip",
                 "http://images.cocodataset.org/zips/val2017.zip",
                 "http://images.cocodataset.org/zips/test2017.zip",
