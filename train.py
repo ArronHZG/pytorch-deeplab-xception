@@ -5,6 +5,7 @@ from pprint import pprint
 import numpy as np
 from tqdm import tqdm
 import torch
+from apex import amp
 
 from mypath import Path
 from dataloaders import make_data_loader
@@ -16,7 +17,6 @@ from utils.lr_scheduler import LR_Scheduler
 from utils.saver import Saver
 from utils.summaries import TensorboardSummary
 from utils.metrics import Evaluator
-from apex import amp
 
 class Trainer(object):
     def __init__(self, args):
@@ -122,8 +122,8 @@ class Trainer(object):
             else:
                 loss.backward()
 
-            if hasattr(torch.cuda, 'empty_cache'):
-                torch.cuda.empty_cache()
+            # if hasattr(torch.cuda, 'empty_cache'):
+            #     torch.cuda.empty_cache()
 
             self.optimizer.step()
             train_loss += loss.item()
@@ -267,7 +267,7 @@ def main():
                         help='evaluuation interval (default: 1)')
     parser.add_argument('--no-val', action='store_true', default=False,
                         help='skip validation during training')
-    parser.add_argument('--apex', type=int, default=0,
+    parser.add_argument('--apex', type=int, default=1,
                         choices=[0,1,2,3],
                         help='Automatic Mixed Precision')
 
