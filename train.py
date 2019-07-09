@@ -4,6 +4,7 @@ from pprint import pprint
 
 import numpy as np
 from tqdm import tqdm
+import torch
 
 from mypath import Path
 from dataloaders import make_data_loader
@@ -15,7 +16,7 @@ from utils.lr_scheduler import LR_Scheduler
 from utils.saver import Saver
 from utils.summaries import TensorboardSummary
 from utils.metrics import Evaluator
-
+from apex import amp
 
 class Trainer(object):
     def __init__(self, args):
@@ -46,6 +47,7 @@ class Trainer(object):
         optimizer = torch.optim.SGD(train_params, momentum=args.momentum,
                                     weight_decay=args.weight_decay, nesterov=args.nesterov)
 
+
         # Define Criterion
         # whether to use class balanced weights
         if args.use_balanced_weights:
@@ -71,6 +73,11 @@ class Trainer(object):
             self.model = torch.nn.DataParallel(self.model, device_ids=self.args.gpu_ids)
             patch_replication_callback(self.model)
             self.model = self.model.cuda()
+
+        if args.apex:
+            # Allow Amp to perform casts as required by the opt_level
+            print("use apex to perform casts")
+            model, optimizer = amp.initialize(model, optimizer, opt_level=f"O{args.apex}")
 
         # Resuming checkpoint
         self.best_pred = 0.0
@@ -100,13 +107,24 @@ class Trainer(object):
         num_img_tr = len(self.train_loader)
         for i, sample in enumerate(tbar):
             image, target = sample['image'], sample['label']
+
+
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
             self.scheduler(self.optimizer, i, epoch, self.best_pred)
             self.optimizer.zero_grad()
             output = self.model(image)
             loss = self.criterion(output, target)
-            loss.backward()
+
+            if self.args.apex:
+                with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                loss.backward()
+
+            if hasattr(torch.cuda, 'empty_cache'):
+                torch.cuda.empty_cache()
+
             self.optimizer.step()
             train_loss += loss.item()
             tbar.set_description('Train loss: %.3f' % (train_loss / (i + 1)))
@@ -249,6 +267,9 @@ def main():
                         help='evaluuation interval (default: 1)')
     parser.add_argument('--no-val', action='store_true', default=False,
                         help='skip validation during training')
+    parser.add_argument('--apex', type=int, default=0,
+                        choices=[0,1,2,3],
+                        help='Automatic Mixed Precision')
 
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -303,4 +324,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # torch.set_default_dtype(torch.float32)
     main()

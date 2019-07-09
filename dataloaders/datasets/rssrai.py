@@ -87,8 +87,8 @@ class Rssrai(data.Dataset):
             print("loading mean and std value")
             self.mean = np.load(self._mean_path)
             self.std  = np.load(self._std_path)
-        print(self.mean)
-        print(self.std)
+        print(f"mean: {self.mean}")
+        print(f"std: {self.std}")
 
     def __getitem__(self, index):
         _img, _target = self._read_numpy_file(index)
@@ -127,14 +127,14 @@ if __name__ == '__main__':
     args.base_size = 513
     args.crop_size = 513
 
-    rssrai_val = Rssrai(args, split='train')
+    rssrai_val = Rssrai(args, split='val')
 
     dataloader = DataLoader(rssrai_val, batch_size=4, shuffle=True, num_workers=0)
 
     for ii, sample in enumerate(dataloader):
         sample['image'] = sample['image'][:, 1:, :, :]
         for jj in range(sample["image"].size()[0]):
-            print(f"img:{sample['image'].size()},label:{sample['label'].size()}")
+            # print(f"img:{sample['image'].size()},label:{sample['label'].size()}")
             img = sample['image'].numpy()
             gt = sample['label'].numpy()
             tmp = np.array(gt[jj]).astype(np.uint8)
