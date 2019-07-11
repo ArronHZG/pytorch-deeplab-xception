@@ -82,11 +82,11 @@ class Rssrai(data.Dataset):
             self.mean = np.mean(images_npy, axis=(0, 1, 2))
             self.std = np.std(images_npy, axis=(0, 1, 2))
             np.save(self._mean_path, self.mean)
-            np.save(self._std_path, self.std )
+            np.save(self._std_path, self.std)
         else:
             print("loading mean and std value")
             self.mean = np.load(self._mean_path)
-            self.std  = np.load(self._std_path)
+            self.std = np.load(self._std_path)
         print(f"mean: {self.mean}")
         print(f"std: {self.std}")
 
@@ -99,8 +99,8 @@ class Rssrai(data.Dataset):
         return len(self.images)
 
     def _read_numpy_file(self, index):
-        _img = np.load(self.images[index]).astype('float64')
-        _target = np.load(self.categories[index]).astype('float64')
+        _img = np.load(self.images[index]).astype('float64') / 255
+        _target = np.load(self.categories[index]).astype('float64') / 255
 
         return _img, _target
 

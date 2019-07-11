@@ -1,5 +1,6 @@
-from tensorboardX import writer, SummaryWriter
+# from tensorboardX import writer, SummaryWriter
 from torchsummary import summary
+from torch.utils.tensorboard import SummaryWriter
 
 from modeling.deeplab import *
 import torch
