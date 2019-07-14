@@ -1,6 +1,5 @@
-# from tensorboardX import writer, SummaryWriter
 from torchsummary import summary
-from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 
 from modeling.deeplab import *
 import torch
@@ -16,3 +15,4 @@ summary(model, (4,256,256),device="cpu")
 x = torch.rand(1,4,256,256)  # 随便定义一个输入
 model.freeze_bn()
 writer.add_graph(model, x)
+writer.close()

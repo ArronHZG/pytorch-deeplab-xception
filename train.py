@@ -324,5 +324,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # torch.set_default_dtype(torch.float32)
     main()

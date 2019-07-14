@@ -128,6 +128,10 @@ if __name__ == '__main__':
     args.crop_size = 513
 
     rssrai_val = Rssrai(args, split='val')
+    for sample in rssrai_val:
+        print(sample['image'].size())
+        print(sample['label'].size())
+        break
 
     dataloader = DataLoader(rssrai_val, batch_size=4, shuffle=True, num_workers=0)
 

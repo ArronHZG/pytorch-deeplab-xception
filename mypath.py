@@ -1,4 +1,4 @@
-class Path(object):
+class Path():
     @staticmethod
     def db_root_dir(dataset):
         if dataset == 'pascal':

@@ -1,6 +1,6 @@
 Cython
 progressbar
-tensorboardX
+TensorBoard
 tqdm
 scipy
 pycocotools
@@ -13,3 +13,4 @@ sklearn
 albumentations
 apex
 torchsummary
+future
