@@ -58,8 +58,8 @@ class ResNet(nn.Module):
             raise NotImplementedError
 
         # Modules
-        self.conv1 = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
-                                bias=False)
+        self.conv1_4c = nn.Conv2d(4, 64, kernel_size=7, stride=2, padding=3,
+                                  bias=False)
         self.bn1 = BatchNorm(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -111,7 +111,7 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, input):
-        x = self.conv1(input)
+        x = self.conv1_4c(input)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
@@ -145,7 +145,7 @@ class ResNet(nn.Module):
         state_dict.update(model_dict)
         self.load_state_dict(state_dict)
 
-def ResNet101(output_stride, BatchNorm, pretrained=False):
+def ResNet101(output_stride, BatchNorm, pretrained=True):
     """Constructs a ResNet-101 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -155,7 +155,7 @@ def ResNet101(output_stride, BatchNorm, pretrained=False):
 
 if __name__ == "__main__":
     import torch
-    model = ResNet101(BatchNorm=nn.BatchNorm2d, pretrained=False, output_stride=8)
+    model = ResNet101(BatchNorm=nn.BatchNorm2d, pretrained=True, output_stride=8)
     input = torch.rand(2, 4, 512, 512)
     output, low_level_feat = model(input)
     print(output.size())
