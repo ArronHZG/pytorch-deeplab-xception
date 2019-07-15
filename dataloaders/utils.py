@@ -11,7 +11,8 @@ def decode_seg_map_sequence(label_masks, dataset='pascal'):
     return rgb_masks
 
 
-def decode_segmap(label_mask, dataset, plot=False):
+def decode_segmap(
+        label_mask, dataset, plot=False):
     """Decode segmentation class labels into a color image
     Args:
         label_mask (np.ndarray): an (M,N) array of integer values denoting
@@ -27,6 +28,9 @@ def decode_segmap(label_mask, dataset, plot=False):
     elif dataset == 'cityscapes':
         n_classes = 19
         label_colours = get_cityscapes_labels()
+    elif dataset == 'rssrai':
+        n_classes = 16
+        label_colours = get_rssrai_labels()
     else:
         raise NotImplementedError
 
@@ -99,3 +103,22 @@ def get_pascal_labels():
                        [64, 0, 128], [192, 0, 128], [64, 128, 128], [192, 128, 128],
                        [0, 64, 0], [128, 64, 0], [0, 192, 0], [128, 192, 0],
                        [0, 64, 128]])
+
+def get_rssrai_labels():
+    return np.array([
+        [128, 64, 128],
+        [244, 35, 232],
+        [70, 70, 70],
+        [102, 102, 156],
+        [190, 153, 153],
+        [153, 153, 153],
+        [250, 170, 30],
+        [220, 220, 0],
+        [107, 142, 35],
+        [152, 251, 152],
+        [0, 130, 180],
+        [220, 20, 60],
+        [255, 0, 0],
+        [0, 0, 142],
+        [0, 0, 70],
+        [0, 60, 100]])

@@ -103,6 +103,14 @@ class VOCSegmentation(Dataset):
 
 
 if __name__ == '__main__':
+
+    test_path = "voc_test"
+
+    np.set_printoptions(threshold=1e6)
+
+    if not os.path.exists(test_path):
+        os.makedirs(test_path)
+
     from dataloaders.utils import decode_segmap
     from torch.utils.data import DataLoader
     import matplotlib.pyplot as plt
@@ -114,6 +122,12 @@ if __name__ == '__main__':
     args.crop_size = 513
 
     voc_train = VOCSegmentation(args, split='train')
+    # for index,sample in enumerate(voc_train):
+    #     print(index)
+    #     print(sample["image"].size())
+    #     print(sample["label"].size())
+    #     print(sample["label"][230])
+    #     break
 
     dataloader = DataLoader(voc_train, batch_size=5, shuffle=True, num_workers=0)
 
@@ -134,10 +148,13 @@ if __name__ == '__main__':
             plt.imshow(img_tmp)
             plt.subplot(212)
             plt.imshow(segmap)
+            with open(f"{test_path}/pascal-{ii}-{jj}.txt","w") as f:
+                f.write(str(img_tmp))
+                f.write(str(tmp))
+                f.write(str(segmap))
+            plt.savefig(f"{test_path}/pascal-{ii}-{jj}.jpg")
 
-        if ii == 1:
+        if ii == 3:
             break
 
     plt.show(block=True)
-
-

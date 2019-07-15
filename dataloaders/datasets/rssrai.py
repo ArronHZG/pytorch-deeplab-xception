@@ -35,8 +35,8 @@ class Rssrai(data.Dataset):
         self._std_path = os.path.join(self._base_dir, "std.npy")
         self.split = split
         self.args = args
-        self.mean = None
-        self.std = None
+        self.mean = (0.526, 0.485, 0.456, 0.406)
+        self.std = (0.241,0.229, 0.224, 0.225)
         self.test_size = 0.1
 
         # Get list of all images from the split and check that the files exist
@@ -64,31 +64,31 @@ class Rssrai(data.Dataset):
             self.categories.append(_category)
         assert (len(self.images) == len(self.categories))
 
-        self._get_mean_std()
+        # self._get_mean_std()
 
         # Display stats
         print('Number of images: {:d}'.format(len(self.images)))
 
-    def _get_mean_std(self):
-        if not os.path.exists(self._mean_path) \
-                and \
-                not os.path.exists(self._std_path):
-            print("compute mean and std value")
-            images_npy = np.load(self.images[0]).reshape(1, 256, 256, 4)
-            for image_npy_path in tqdm(self.images[1:]):
-                images_npy = np.concatenate((images_npy, np.load(image_npy_path).reshape(1, 256, 256, 4)), axis=0)
-            print(images_npy.shape)
-            images_npy = images_npy / 255
-            self.mean = np.mean(images_npy, axis=(0, 1, 2))
-            self.std = np.std(images_npy, axis=(0, 1, 2))
-            np.save(self._mean_path, self.mean)
-            np.save(self._std_path, self.std)
-        else:
-            print("loading mean and std value")
-            self.mean = np.load(self._mean_path)
-            self.std = np.load(self._std_path)
-        print(f"mean: {self.mean}")
-        print(f"std: {self.std}")
+    # def _get_mean_std(self):
+    #     if not os.path.exists(self._mean_path) \
+    #             and \
+    #             not os.path.exists(self._std_path):
+    #         print("compute mean and std value")
+    #         images_npy = np.load(self.images[0]).reshape(1, 256, 256, 4)
+    #         for image_npy_path in tqdm(self.images[1:]):
+    #             images_npy = np.concatenate((images_npy, np.load(image_npy_path).reshape(1, 256, 256, 4)), axis=0)
+    #         print(images_npy.shape)
+    #         images_npy = images_npy / 255
+    #         self.mean = np.mean(images_npy, axis=(0, 1, 2))
+    #         self.std = np.std(images_npy, axis=(0, 1, 2))
+    #         np.save(self._mean_path, self.mean)
+    #         np.save(self._std_path, self.std)
+    #     else:
+    #         print("loading mean and std value")
+    #         self.mean = np.load(self._mean_path)
+    #         self.std = np.load(self._std_path)
+    #     print(f"mean: {self.mean}")
+    #     print(f"std: {self.std}")
 
     def __getitem__(self, index):
         _img, _target = self._read_numpy_file(index)
@@ -99,15 +99,15 @@ class Rssrai(data.Dataset):
         return len(self.images)
 
     def _read_numpy_file(self, index):
-        _img = np.load(self.images[index]).astype('float64') / 255
-        _target = np.load(self.categories[index]).astype('float64') / 255
+        _img = np.load(self.images[index]).astype('float32')
+        _target = np.load(self.categories[index]).astype('int32')
 
         return _img, _target
 
     def transform(self, sample):
-        image = A.Normalize(mean=self.mean, std=self.std)(image=sample['image'])["image"]
-        image, label = torch.from_numpy(image), torch.from_numpy(sample['label'])
-        sample['image'], sample['label'] = image.permute(2, 0, 1), label
+        sample['image'] = A.Normalize(mean=self.mean, std=self.std)(image=sample['image'])["image"]
+        sample['image'] = torch.from_numpy(sample['image']).permute(2, 0, 1)
+        sample['label'] = torch.from_numpy(sample['label'])
         return sample
 
     def __str__(self):
@@ -115,6 +115,17 @@ class Rssrai(data.Dataset):
 
 
 if __name__ == '__main__':
+    import shutil
+
+    test_path = "rssrai_test"
+
+    if not os.path.exists(test_path):
+        os.makedirs(test_path)
+    else:
+        shutil.rmtree(test_path)
+        os.makedirs(test_path)
+
+    np.set_printoptions(threshold=1e6)
     from dataloaders import custom_transforms as tr
     from dataloaders.utils import decode_segmap
     from torch.utils.data import DataLoader
@@ -127,26 +138,21 @@ if __name__ == '__main__':
     args.base_size = 513
     args.crop_size = 513
 
-    rssrai_val = Rssrai(args, split='val')
-    for sample in rssrai_val:
-        print(sample['image'].size())
-        print(sample['label'].size())
-        break
+    rssrai_val = Rssrai(args, split='train')
 
     dataloader = DataLoader(rssrai_val, batch_size=4, shuffle=True, num_workers=0)
 
     for ii, sample in enumerate(dataloader):
         sample['image'] = sample['image'][:, 1:, :, :]
         for jj in range(sample["image"].size()[0]):
-            # print(f"img:{sample['image'].size()},label:{sample['label'].size()}")
             img = sample['image'].numpy()
             gt = sample['label'].numpy()
-            tmp = np.array(gt[jj]).astype(np.uint8)
-            segmap = decode_segmap(tmp, dataset='coco')
             img_tmp = np.transpose(img[jj], axes=[1, 2, 0])
-            # img_tmp *= (0.229, 0.224, 0.225)
-            # img_tmp += (0.485, 0.456, 0.406)
-            # img_tmp *= 255.0
+            tmp = gt[jj]
+            segmap = decode_segmap(tmp, dataset='rssrai')
+            img_tmp *= rssrai_val.std[1:]
+            img_tmp += rssrai_val.mean[1:]
+            img_tmp *= 255.0
             img_tmp = img_tmp.astype(np.uint8)
             plt.figure()
             plt.title('display')
@@ -154,8 +160,13 @@ if __name__ == '__main__':
             plt.imshow(img_tmp)
             plt.subplot(212)
             plt.imshow(segmap)
+            with open(f"{test_path}/rssrai-{ii}-{jj}.txt", "w") as f:
+                f.write(str(img_tmp))
+                f.write(str(tmp))
+                f.write(str(segmap))
+            plt.savefig(f"{test_path}/rssrai-{ii}-{jj}.jpg")
 
-        if ii == 1:
+        if ii == 0:
             break
 
     plt.show(block=True)
