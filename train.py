@@ -136,6 +136,7 @@ class Trainer(object):
             #     self.summary.visualize_image(self.writer, self.args.dataset, image, target, output, global_step)
 
         self.writer.add_scalar('train/total_loss_epoch', train_loss, epoch)
+        self.writer.add_scalar("train/learningRate", self.optimizer.param_groups[0]['lr'],epoch)
         print('[Epoch: %d, numImages: %5d]' % (epoch, i * self.args.batch_size + image.data.shape[0]))
         print('Loss: %.3f' % train_loss)
 

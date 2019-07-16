@@ -1,4 +1,5 @@
 import math
+import torch
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 from modeling.sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
@@ -136,7 +137,8 @@ class ResNet(nn.Module):
                 m.bias.data.zero_()
 
     def _load_pretrained_model(self):
-        pretrain_dict = model_zoo.load_url('https://download.pytorch.org/models/resnet101-5d3b4d8f.pth')
+        # pretrain_dict = model_zoo.load_url('https://download.pytorch.org/models/resnet101-5d3b4d8f.pth')
+        pretrain_dict=torch.load('/home/arron/Documents/arron/pytorch-deeplab-xception/run/rssrai/deeplab-resnet_4c/experiment_7/checkpoint.pth.tar')
         model_dict = {}
         state_dict = self.state_dict()
         for k, v in pretrain_dict.items():
