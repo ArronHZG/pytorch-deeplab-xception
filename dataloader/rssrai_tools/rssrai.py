@@ -44,9 +44,9 @@ class Rssrai( data.Dataset ):
             self.len = 32000
 
         if self.type == 'valid':
-            self._label_path_list = glob( os.path.join( self._base_dir, 'split_valid','label','*.tif'))
+            self._label_path_list = glob( os.path.join( self._base_dir, 'split_valid', 'label', '*.tif' ) )
 
-            self._label_name_list=[name.split('/')[-1] for name in self._label_path_list]
+            self._label_name_list = [name.split( '/' )[-1] for name in self._label_path_list]
             # self._label_name_list = pd.read_csv( valid_csv )["文件名"].values.tolist()
             self._image_dir = os.path.join( self._base_dir, 'split_valid', 'img' )
             self._label_dir = os.path.join( self._base_dir, 'split_valid', 'label' )
@@ -115,7 +115,8 @@ def testData():
     if not os.path.exists( test_path ):
         os.makedirs( test_path )
 
-    rssrai = Rssrai(type="valid")
+    rssrai = Rssrai( type="valid" )
+    print(len(rssrai))
     for i in rssrai:
         pprint( i["image"].shape )
         pprint( i["label"].shape )
@@ -144,7 +145,7 @@ def testData():
             #     f.write( str( img_tmp ) )
             #     f.write( str( tmp ) )
             #     f.write( str( segmap ) )
-            plt.savefig( f"{test_path}/rssrai-{ii}-{jj}.jpg" )
+            # plt.savefig( f"{test_path}/rssrai-{ii}-{jj}.jpg" )
 
         if ii == 5:
             break
