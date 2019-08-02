@@ -1,6 +1,7 @@
 import functools
 import os
 import random
+from glob import glob
 from pprint import pprint
 
 import albumentations as A
@@ -43,8 +44,10 @@ class Rssrai( data.Dataset ):
             self.len = 32000
 
         if self.type == 'valid':
-            valid_csv = os.path.join( self._base_dir, 'valid_set.csv' )
-            self._label_name_list = pd.read_csv( valid_csv )["文件名"].values.tolist()
+            self._label_path_list = glob( os.path.join( self._base_dir, 'split_valid','label','*.tif'))
+
+            self._label_name_list=[name.split('/')[-1] for name in self._label_path_list]
+            # self._label_name_list = pd.read_csv( valid_csv )["文件名"].values.tolist()
             self._image_dir = os.path.join( self._base_dir, 'split_valid', 'img' )
             self._label_dir = os.path.join( self._base_dir, 'split_valid', 'label' )
 
@@ -72,7 +75,6 @@ class Rssrai( data.Dataset ):
             return sample
         if self.type == 'valid':
             sample = self._read_file( self._label_name_list[index] )
-            sample = self._random_crop( sample )
             return sample
         if self.type == 'test':
             pass
