@@ -83,7 +83,7 @@ class Rssrai( data.Dataset ):
         compose = A.Compose( [aug], additional_targets={'image': 'image', 'label': 'mask'} )
         return compose( **sample )
 
-    @functools.lru_cache( maxsize=None )
+    # @functools.lru_cache( maxsize=None )
     def _read_file(self, label_name):
         image_name = label_name.replace( "_label", "" )
         image_pil = Image.open( os.path.join( self._image_dir, image_name ) )
