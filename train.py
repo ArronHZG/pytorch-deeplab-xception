@@ -1,11 +1,11 @@
 import argparse
 import os
 from pprint import pprint
+from apex import amp
 
 import numpy as np
 from tqdm import tqdm
 import torch
-from apex import amp
 
 from mypath import Path
 from dataloader import make_data_loader
@@ -313,10 +313,10 @@ def main():
         args.checkname = 'deeplab-' + str( args.backbone )
     pprint( args )
     args = argparse.Namespace(apex=2, backbone='resnet_4c', base_size=513, batch_size=64, checkname='deeplab-resnet_4c', crop_size=513,
-                       cuda=True, dataset='rssrai', epochs=70, eval_interval=1, freeze_bn=False, ft=False, gpu_ids=[0],
+                       cuda=True, dataset='rssrai', epochs=100, eval_interval=1, freeze_bn=False, ft=False, gpu_ids=[0],
                        loss_type='ce', lr=0.1, lr_scheduler='poly', momentum=0.9, nesterov=False, no_cuda=False, no_val=False,
                        out_stride=16, resume=None, seed=1, start_epoch=0, sync_bn=False, test_batch_size=64,
-                       use_balanced_weights=False, use_sbd=False, weight_decay=0.0005, workers=16)
+                       use_balanced_weights=False, use_sbd=False, weight_decay=0.0005, workers=8)
 
     torch.manual_seed( args.seed )
     trainer = Trainer( args )
