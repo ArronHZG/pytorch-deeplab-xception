@@ -34,8 +34,8 @@ class Rssrai( data.Dataset ):
 
         # 加载数据
         if self.type == 'train':
-            train_csv = os.path.join( self._base_dir, 'train_name.csv' )
-            self._label_name_list = pd.read_csv( train_csv )["name"].values.tolist()
+            train_csv = os.path.join( self._base_dir, 'train_set.csv' )
+            self._label_name_list = pd.read_csv( train_csv )["文件名"].values.tolist()
 
             self._image_dir = os.path.join( self._base_dir, 'split_train', 'img' )
             self._label_dir = os.path.join( self._base_dir, 'split_train', 'label' )
@@ -43,8 +43,8 @@ class Rssrai( data.Dataset ):
             self.len = 32000
 
         if self.type == 'valid':
-            valid_csv = os.path.join( self._base_dir, 'valid_name.csv' )
-            self._label_name_list = pd.read_csv( valid_csv )["name"].values.tolist()
+            valid_csv = os.path.join( self._base_dir, 'valid_set.csv' )
+            self._label_name_list = pd.read_csv( valid_csv )["文件名"].values.tolist()
             self._image_dir = os.path.join( self._base_dir, 'split_valid', 'img' )
             self._label_dir = os.path.join( self._base_dir, 'split_valid', 'label' )
 
