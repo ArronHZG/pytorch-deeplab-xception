@@ -191,7 +191,7 @@ class Trainer( object ):
             self.best_pred = new_pred
             self.saver.save_checkpoint( {
                 'epoch': epoch + 1,
-                'state_dict': self.model.module.state_dict(),
+                'state_dict': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
                 'best_pred': self.best_pred,
             }, is_best )
@@ -312,6 +312,12 @@ def main():
     if args.checkname is None:
         args.checkname = 'deeplab-' + str( args.backbone )
     pprint( args )
+    args = argparse.Namespace(apex=2, backbone='resnet_4c', base_size=513, batch_size=64, checkname='deeplab-resnet_4c', crop_size=513,
+                       cuda=True, dataset='rssrai', epochs=70, eval_interval=1, freeze_bn=False, ft=False, gpu_ids=[0],
+                       loss_type='ce', lr=0.1, lr_scheduler='poly', momentum=0.9, nesterov=False, no_cuda=False, no_val=False,
+                       out_stride=16, resume=None, seed=1, start_epoch=0, sync_bn=False, test_batch_size=64,
+                       use_balanced_weights=False, use_sbd=False, weight_decay=0.0005, workers=16)
+
     torch.manual_seed( args.seed )
     trainer = Trainer( args )
     print( 'Starting Epoch:', trainer.args.start_epoch )

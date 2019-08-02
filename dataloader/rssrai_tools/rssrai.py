@@ -115,7 +115,7 @@ def testData():
     if not os.path.exists( test_path ):
         os.makedirs( test_path )
 
-    rssrai = Rssrai( type="valid" )
+    rssrai = Rssrai( type="train" )
     print(len(rssrai))
     for i in rssrai:
         pprint( i["image"].shape )
@@ -147,7 +147,7 @@ def testData():
             #     f.write( str( segmap ) )
             # plt.savefig( f"{test_path}/rssrai-{ii}-{jj}.jpg" )
 
-        if ii == 5:
+        if ii == 3:
             break
 
     plt.show( block=True )
