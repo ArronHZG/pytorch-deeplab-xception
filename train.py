@@ -8,7 +8,7 @@ import torch
 from apex import amp
 
 from mypath import Path
-from dataloaders import make_data_loader
+from dataloader import make_data_loader
 from modeling.sync_batchnorm.replicate import patch_replication_callback
 from modeling.deeplab import *
 from utils.loss import SegmentationLosses

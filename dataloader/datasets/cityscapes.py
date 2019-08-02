@@ -5,7 +5,7 @@ from PIL import Image
 from torch.utils import data
 from mypath import Path
 from torchvision import transforms
-from dataloaders import custom_transforms as tr
+from dataloader import custom_transforms as tr
 
 class CityscapesSegmentation(data.Dataset):
     NUM_CLASSES = 19
@@ -107,7 +107,7 @@ class CityscapesSegmentation(data.Dataset):
         return composed_transforms(sample)
 
 if __name__ == '__main__':
-    from dataloaders.utils import decode_segmap
+    from dataloader.utils import decode_segmap
     from torch.utils.data import DataLoader
     import matplotlib.pyplot as plt
     import argparse

@@ -3,13 +3,13 @@ import torch.utils.data as data
 
 class CombineDBs(data.Dataset):
     NUM_CLASSES = 21
-    def __init__(self, dataloaders, excluded=None):
-        self.dataloaders = dataloaders
+    def __init__(self, dataloader, excluded=None):
+        self.dataloader = dataloader
         self.excluded = excluded
         self.im_ids = []
 
         # Combine object lists
-        for dl in dataloaders:
+        for dl in dataloader:
             for elem in dl.im_ids:
                 if elem not in self.im_ids:
                     self.im_ids.append(elem)
@@ -26,7 +26,7 @@ class CombineDBs(data.Dataset):
         self.im_list = []
         new_im_ids = []
         num_images = 0
-        for ii, dl in enumerate(dataloaders):
+        for ii, dl in enumerate(dataloader):
             for jj, curr_im_id in enumerate(dl.im_ids):
                 if (curr_im_id in self.im_ids) and (curr_im_id not in new_im_ids):
                     num_images += 1
@@ -40,10 +40,10 @@ class CombineDBs(data.Dataset):
 
         _db_ii = self.cat_list[index]["db_ii"]
         _cat_ii = self.cat_list[index]['cat_ii']
-        sample = self.dataloaders[_db_ii].__getitem__(_cat_ii)
+        sample = self.dataloader[_db_ii].__getitem__(_cat_ii)
 
         if 'meta' in sample.keys():
-            sample['meta']['db'] = str(self.dataloaders[_db_ii])
+            sample['meta']['db'] = str(self.dataloader[_db_ii])
 
         return sample
 
@@ -51,18 +51,18 @@ class CombineDBs(data.Dataset):
         return len(self.cat_list)
 
     def __str__(self):
-        include_db = [str(db) for db in self.dataloaders]
+        include_db = [str(db) for db in self.dataloader]
         exclude_db = [str(db) for db in self.excluded]
         return 'Included datasets:'+str(include_db)+'\n'+'Excluded datasets:'+str(exclude_db)
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    from dataloaders.datasets import pascal, sbd
-    from dataloaders import sbd
+    from dataloader.datasets import pascal, sbd
+    from dataloader import sbd
     import torch
     import numpy as np
-    from dataloaders.utils import decode_segmap
+    from dataloader.utils import decode_segmap
     import argparse
 
     parser = argparse.ArgumentParser()

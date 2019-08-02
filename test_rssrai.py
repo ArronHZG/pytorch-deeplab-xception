@@ -4,7 +4,7 @@ import glob
 import numpy as np
 from torch.utils.data import DataLoader
 
-from dataloaders.datasets.rssrai_test import RssraiTestSet
+from dataloader.datasets.rssrai_test import RssraiTestSet
 from modeling.deeplab import *
 
 from tqdm import tqdm
