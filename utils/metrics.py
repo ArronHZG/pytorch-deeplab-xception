@@ -15,6 +15,16 @@ class Evaluator(object):
         Acc = np.nanmean(Acc)
         return Acc
 
+    def kappa(pre_vec, cor_vec, label_vec):  # testData表示要计算的数据，k表示数据矩阵的是k*k的
+    assert len(pre_vec) == len(label_vec) == len(pre_vec)
+    tmp = 0.0
+    for i in range(len(label_vec)):
+        tmp += pre_vec[i] * label_vec[i]
+    pe = float(tmp) / sum(label_vec) ** 2
+    p0 = float(sum(cor_vec) / sum(label_vec))
+    cohens_coefficient = float((p0-pe)/(1-pe))
+    return cohens_coefficient           
+
     def Mean_Intersection_over_Union(self):
         MIoU = np.diag(self.confusion_matrix) / (
                     np.sum(self.confusion_matrix, axis=1) + np.sum(self.confusion_matrix, axis=0) -
@@ -46,5 +56,33 @@ class Evaluator(object):
         self.confusion_matrix = np.zeros((self.num_class,) * 2)
 
 
+class Kappa:
+    def __init__(self, num_classes=16):
+        self.pre_vec = np.zeros(num_classes)
+        self.cor_vec = np.zeros(num_classes)
+        self.tar_vec = np.zeros(num_classes)
+        self.num = num_classes
 
+    def update(self, output, target):
+        pre_array = torch.argmax(output, dim=1)
+        pre = np.resize(pre_array, (1, -1))
+        for i in np.ndarray.flatten(pre):
+            self.pre_vec[i] += 1
+        
+        target = np.resize(target_array, (1, -1))
+        for i in np.ndarray.flatten(target):
+            self.tar_vec[i] += 1
 
+        for i in range(self.num):
+            pre_mask = (pre_array == i).byte()
+            tar_mask = (target_array == i).byte()
+            self.cor_vec[i] = (pre_mask & tar_mask).sum().item()
+        
+    def get(self):
+        return self.pre_vec, self.cor_vec, self.tar_vec
+
+    def reset(self):
+        self.pre_vec = np.zeros(num_classes)
+        self.cor_vec = np.zeros(num_classes)
+        self.tar_vec = np.zeros(num_classes)
+        self.num = num_classes
