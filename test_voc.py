@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from dataloaders.datasets.pascal import VOCSegmentation
+from dataloader.datasets.pascal import VOCSegmentation
 from modeling.deeplab import *
 from tqdm import tqdm
 import torch

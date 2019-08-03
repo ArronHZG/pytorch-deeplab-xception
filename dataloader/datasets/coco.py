@@ -7,7 +7,7 @@ import os
 from pycocotools.coco import COCO
 from pycocotools import mask
 from torchvision import transforms
-from dataloaders import custom_transforms as tr
+from dataloader import custom_transforms as tr
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -120,8 +120,8 @@ class COCOSegmentation(Dataset):
 
 
 if __name__ == "__main__":
-    from dataloaders import custom_transforms as tr
-    from dataloaders.utils import decode_segmap
+    from dataloader import custom_transforms as tr
+    from dataloader.utils import decode_segmap
     from torch.utils.data import DataLoader
     from torchvision import transforms
     import matplotlib.pyplot as plt

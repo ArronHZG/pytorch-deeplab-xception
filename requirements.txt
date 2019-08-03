@@ -11,6 +11,5 @@ matplotlib
 pandas
 sklearn
 albumentations
-apex
 torchsummary
 future

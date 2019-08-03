@@ -1,5 +1,7 @@
-from dataloaders.datasets import cityscapes, coco, combine_dbs, pascal, sbd, rssrai
+from dataloader.datasets import cityscapes, coco, combine_dbs, pascal, sbd
 from torch.utils.data import DataLoader
+
+from dataloader.rssrai_tools.rssrai import Rssrai
 
 
 def make_data_loader(args, **kwargs):
@@ -33,8 +35,8 @@ def make_data_loader(args, **kwargs):
         test_loader = None
         return train_loader, val_loader, test_loader, num_class
     elif args.dataset == 'rssrai':
-        train_set = rssrai.Rssrai(args, split='train')
-        val_set = rssrai.Rssrai(args, split='val')
+        train_set = Rssrai(type='train')
+        val_set = Rssrai(type='valid')
         num_class = train_set.NUM_CLASSES
         train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, **kwargs)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=False, **kwargs)
