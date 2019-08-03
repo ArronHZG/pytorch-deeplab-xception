@@ -16,14 +16,14 @@ class Evaluator(object):
         return Acc
 
     def kappa(pre_vec, cor_vec, label_vec):  # testData表示要计算的数据，k表示数据矩阵的是k*k的
-    assert len(pre_vec) == len(label_vec) == len(pre_vec)
-    tmp = 0.0
-    for i in range(len(label_vec)):
-        tmp += pre_vec[i] * label_vec[i]
-    pe = float(tmp) / sum(label_vec) ** 2
-    p0 = float(sum(cor_vec) / sum(label_vec))
-    cohens_coefficient = float((p0-pe)/(1-pe))
-    return cohens_coefficient           
+        assert len(pre_vec) == len(label_vec) == len(pre_vec)
+        tmp = 0.0
+        for i in range(len(label_vec)):
+            tmp += pre_vec[i] * label_vec[i]
+        pe = float(tmp) / sum(label_vec) ** 2
+        p0 = float(sum(cor_vec) / sum(label_vec))
+        cohens_coefficient = float((p0-pe)/(1-pe))
+        return cohens_coefficient           
 
     def Mean_Intersection_over_Union(self):
         MIoU = np.diag(self.confusion_matrix) / (
@@ -79,7 +79,14 @@ class Kappa:
             self.cor_vec[i] = (pre_mask & tar_mask).sum().item()
         
     def get(self):
-        return self.pre_vec, self.cor_vec, self.tar_vec
+        assert len(self.pre_vec) == len(self.tar_vec) == len(self.pre_vec)
+        tmp = 0.0
+        for i in range(len(self.tar_vec)):
+            tmp += self.pre_vec[i] * self.tar_vec[i]
+        pe = float(tmp) / sum(self.tar_vec) ** 2
+        p0 = float(sum(self.cor_vec) / sum(self.tar_vec))
+        cohens_coefficient = float((p0-pe)/(1-pe))
+        return cohens_coefficient
 
     def reset(self):
         self.pre_vec = np.zeros(self.num)
