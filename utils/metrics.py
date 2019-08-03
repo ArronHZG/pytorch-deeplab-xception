@@ -69,20 +69,19 @@ class Kappa:
         for i in np.ndarray.flatten(pre):
             self.pre_vec[i] += 1
         
-        target = np.resize(target_array, (1, -1))
+        target = np.resize(target, (1, -1))
         for i in np.ndarray.flatten(target):
             self.tar_vec[i] += 1
 
         for i in range(self.num):
             pre_mask = (pre_array == i).byte()
-            tar_mask = (target_array == i).byte()
+            tar_mask = (target == i).byte()
             self.cor_vec[i] = (pre_mask & tar_mask).sum().item()
         
     def get(self):
         return self.pre_vec, self.cor_vec, self.tar_vec
 
     def reset(self):
-        self.pre_vec = np.zeros(num_classes)
-        self.cor_vec = np.zeros(num_classes)
-        self.tar_vec = np.zeros(num_classes)
-        self.num = num_classes
+        self.pre_vec = np.zeros(self.num)
+        self.cor_vec = np.zeros(self.num)
+        self.tar_vec = np.zeros(self.num)
