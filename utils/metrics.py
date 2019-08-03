@@ -57,38 +57,34 @@ class Evaluator(object):
 
 
 class Kappa:
-    def __init__(self, num_classes=16):
-        self.pre_vec = np.zeros(num_classes)
-        self.cor_vec = np.zeros(num_classes)
-        self.tar_vec = np.zeros(num_classes)
+    def __init__(self, num_classes):
+        self.pre_vec = np.zeros( num_classes )
+        self.cor_vec = np.zeros( num_classes )
+        self.tar_vec = np.zeros( num_classes )
         self.num = num_classes
 
     def update(self, output, target):
-        pre_array = torch.argmax(output, dim=1)
-        pre = np.resize(pre_array, (1, -1))
-        for i in np.ndarray.flatten(pre):
-            self.pre_vec[i] += 1
-        
-        target = np.resize(target, (1, -1))
-        for i in np.ndarray.flatten(target):
-            self.tar_vec[i] += 1
+        pre_array = torch.argmax( output, dim=1 )
 
-        for i in range(self.num):
+        for i in range( self.num ):
             pre_mask = (pre_array == i).byte()
             tar_mask = (target == i).byte()
             self.cor_vec[i] = (pre_mask & tar_mask).sum().item()
-        
+            self.pre_vec[i] = pre_mask.sum().item()
+            self.tar_vec[i] = tar_mask.sum().item()
+
     def get(self):
-        assert len(self.pre_vec) == len(self.tar_vec) == len(self.pre_vec)
+        assert len( self.pre_vec ) == len( self.tar_vec ) == len( self.pre_vec )
         tmp = 0.0
-        for i in range(len(self.tar_vec)):
+        for i in range( len( self.tar_vec ) ):
             tmp += self.pre_vec[i] * self.tar_vec[i]
-        pe = float(tmp) / sum(self.tar_vec) ** 2
-        p0 = float(sum(self.cor_vec) / sum(self.tar_vec))
-        cohens_coefficient = float((p0-pe)/(1-pe))
+        pe = float( tmp ) / sum( self.tar_vec ) ** 2
+        p0 = float( sum( self.cor_vec ) / sum( self.tar_vec ) )
+        cohens_coefficient = float( (p0 - pe) / (1 - pe) )
         return cohens_coefficient
 
     def reset(self):
         self.pre_vec = np.zeros(self.num)
         self.cor_vec = np.zeros(self.num)
         self.tar_vec = np.zeros(self.num)
+
